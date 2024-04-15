@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Previous Trees</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var trees = /*[[${trees}]]*/ [];
+        /*]]>*/
+    </script>
+    <nav>
+        <a href="previous-trees">Previous Trees</a>
+        <a href="enter-numbers">Enter Numbers</a>
+    </nav>
+    <main>
+        <div class="container mt-4">
+            <h2>
+                Previous Binary Search Trees
+            </h2>
+            <canvas id="bstCanvas" width="800" height="400" style="border: 1px solid #ccc"></canvas>
+            <div th:if="${trees.isEmpty()}">
+                <p>
+                    No previous trees found.
+                </p>
+            </div>
+            <div th:unless="${trees.isEmpty()}">
+                <table class="table">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">
+                                Action
+                            </th>
+                            <th scope="col">
+                                #
+                            </th>
+                            <th scope="col">
+                                Numbers
+                            </th>
+                            <th scope="col">
+                                Tree Structure
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="tree, iterStat : ${trees}">
+                            <td>
+                                <button th:attr="data-index=${iterStat.index}" onclick="drawTreeFromAttribute(this)">Draw</button>
+                            </td>
+                            <td th:text="${iterStat.count}">
+                                1
+                            </td>
+                            <td th:text="${tree.numbers}">
+                                1, 2, 3, 4
+                            </td>
+                            <td>
+                                <pre th:text="${tree.treeStructure}">
+                                    {"value":1,"left":null,"right":{"value":2,"left":null,"right":{"value":3,"left":null,"right":{"value":4,"left":null,"right":null}}}}
+                                </pre>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const buttons = document.querySelectorAll('button[data-index]');
+        buttons.forEach((btn, index) => {
+            btn.setAttribute('data-tree', JSON.stringify(trees[index]));
+        });
+    });
+
+    function drawTreeFromAttribute(buttonElement) {
+        var treeDataStr = buttonElement.getAttribute('data-tree');
+        var treeDataObj = JSON.parse(treeDataStr);
+        var treeStructure = JSON.parse(treeDataObj.treeStructure);
+        console.log(treeStructure);
+        const canvas = document.getElementById('bstCanvas');
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawNode(treeStructure, ctx, canvas.width / 2, 20, 200)
+    }
+
+    function drawNode(node, ctx, x, y, space) {
+        const RADIUS = 20;
+        if (node !== null) {
+            ctx.beginPath();
+            ctx.arc(x, y, RADIUS, 0, 2 * Math.PI);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+            ctx.strokeStyle = 'black';
+            // ctx.fillText(node.key, x - 5, y + 5);
+            ctx.stroke();
+
+            ctx.fillStyle = 'black';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(node.key.toString(), x, y);
+
+            ctx.strokeStyle = '#007BFF';
+            ctx.lineWidth = 2;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            if (node.left) {
+                const angle = Math.atan2(y + 100 - y, (x - space) - x);
+                ctx.beginPath();
+                ctx.moveTo(x + RADIUS * Math.cos(angle), y + RADIUS * Math.sin(angle));
+                ctx.lineTo(x - space, y + 100);
+                ctx.stroke();
+                drawNode(node.left, ctx, x - space, y + 100, space / 2);
+            }
+
+            if (node.right) {
+                const angle = Math.atan2(y + 100 - y, (x + space) - x);
+                ctx.beginPath();
+                ctx.moveTo(x + RADIUS * Math.cos(angle), y + RADIUS * Math.sin(angle));
+                ctx.lineTo(x + space, y + 100);
+                ctx.stroke();
+                drawNode(node.right, ctx, x + space, y + 100, space / 2);
+            }
+        }
+    }
+
+</script>
+</body>
+</html>

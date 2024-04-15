@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Processed Numbers</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+    <nav>
+        <a href="previous-trees">Previous Trees</a>
+        <a href="enter-numbers">Enter Numbers</a>
+    </nav>
+    <main>
+        <h2>Processed Numbers</h2>
+        <p>Numbers: <span th:text="${numbers}"></span></p>
+        <h3>Binary Search Tree (JSON)</h3>
+        <pre th:text="${treeJson}"></pre>
+        <a href="/enter-numbers">Back to Enter Numbers</a>
+    </main>
+</body>
+</html>
